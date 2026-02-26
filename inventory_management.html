@@ -1,9 +1,527 @@
-<html>
+ <!DOCTYPE html>
+<html lang="km">
 <head>
-    <title>Inventory Management System</title>
-</head>
-<body>
+    <meta charset="UTF-8">
+<head>
     <h1>Inventory Management System</h1>
     <p>Manage your inventory efficiently.</p>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Khmer:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Khmer', sans-serif;
+            background-color: #f5f7fa;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            font-size: 14px;
+            text-wrap: nowrap;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 8px 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 10px 8px;
+            text-align: center;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .edit-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #e1f5fe !important;
+        }
+        
+        .form-input {
+            border: 1px solid #ccc;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .header-title {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            background-color: #34495e;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .save-btn {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .delete-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .add-row-btn {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .add-row-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .summary-section {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .total-amount {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="header-title">
+            <h1 class="text-2xl md:text-3xl font-bold">កត់ត្រាប័ណ្ណបញ្ចូលសម្ភារៈ_ទំនិញ</h1>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">លេខប័ណ្ណបញ្ចូលសម្ភារៈ ទំនិញ *</label>
+                    <select class="form-input">
+                    <option value=""០០១"">០០១</option><option value=""០០២"">០០២</option><option value=""០០៣"">០០៣</option><option value=""០០៤"">០០៤</option><option value=""០០៥"">០០៥</option><option value=""០០៦"">០០៦</option><option value=""០០៧"">០០៧</option><option value=""០០៨"">០០៨</option><option value=""០០៩"">០០៩</option><option value=""០១០"">០១០</option><option value=""០១១"">០១១</option><option value=""០១២"">០១២</option><option value=""០១៣"">០១៣</option><option value=""០១៤"">០១៤</option><option value=""០១៥"">០១៥</option><option value=""០១៦"">០១៦</option><option value=""០១៧"">០១៧</option><option value=""០១៨"">០១៨</option><option value=""០១៩"">០១៩</option><option value=""០២០"">០២០</option><option value=""០២១"">០២១</option><option value=""០២២"">០២២</option><option value=""០២៣"">០២៣</option><option value=""០២៤"">០២៤</option><option value=""០២៥"">០២៥</option><option value=""០២៦"">០២៦</option><option value=""០២៧"">០២៧</option><option value=""០២៨"">០២៨</option><option value=""០២៩"">០២៩</option><option value=""០៣០"">០៣០</option></select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">កាលបរិច្ឆេទបញ្ជីបញ្ចូលសម្ភារៈ ទំនិញ *</label>
+                    <input type="date" class="form-input">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">បានទទួលពី (ឈ្មោះហាងសម្ភារៈ-ទំនិញ) *</label>
+                    <input type="text" class="form-input" placeholder="បញ្ចូលឈ្មោះហាង">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">តាមរយៈ(ប្រភេទសក្ខីបត្រដើម)</label>
+                    <select class="form-input">
+                        <option>វិកយបត្រ</option>
+                        <option>បណ្ណសម្ភារៈ</option>
+                        <option>បញ្ជីសម្ភារៈ</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">លេខសក្ខីបត្រ *</label>
+                    <input type="number" class="form-input" placeholder="បញ្ចូលលេខសក្ខីបត្រ">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">កាលបរិច្ឆេទវិក្កយបត្រ *</label>
+                    <input type="date" class="form-input">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">អ្នកយកមកបញ្ចូល</label>
+                    <input type="text" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកយកមក">
+                </div>
+            </div>
+            
+            <div class="section-title">បញ្ជាក់សម្ភារៈដែលបានទទួល</div>
+            
+            <div class="table-container mb-4">
+                <table id="mainTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">ល.រ</th>
+                            <th rowspan="2">ឈ្មោះសញ្ញាក្បួនខ្នាតបរិក្ខារទំនិញ *</th>
+                            <th rowspan="2">ប្រភេទ *</th>
+                            <th rowspan="2">ឯកតាគិត *</th>
+                            <th colspan="2">ចំនួន</th>
+                            <th rowspan="2">ថ្លៃឯកតា *</th>
+                            <th rowspan="2">ទឹកប្រាក់សរុប *</th>
+                            <th rowspan="2">សក្តិ</th>
+                        </tr>
+                        <tr>
+                            <th>តាមសក្ខីបត្រ *</th>
+                            <th>បញ្ចូលពិតប្រាកដ *</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="summary-section">
+                <div class="summary-item">
+                    <span>ចំនួនសម្ភារៈសរុប:</span>
+                    <span class="total-amount" id="item-count">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>ទឹកប្រាក់សរុប:</span>
+                    <span class="total-amount" id="total-amount">0 ៛</span>
+                </div>
+            </div>
+            
+            <button id="addRowBtn" class="add-row-btn">បន្ថែមបន្ទាត់</button>
+            
+            <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <strong>សេចក្តីសំណួរ:</strong> សូមចុចលើប្រអប់មួយចំនួនដើម្បីកែប្រែ ឬបន្ថែមបន្ទាត់។
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button class="save-btn">រក្សាទុក</button>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="section-title">ទិន្នន័យក្នុង Local Storage</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>លេខរៀង</th>
+                            <th>ឈ្មោះសញ្ញា ក្បួន ខ្នាត បរិក្ខារ ទំនិញ</th>
+                            <th>ប្រភេទ</th>
+                            <th>ឯកតាគិត</th>
+                            <th>ចំនួន (តាមសក្ខីបត្រ)</th>
+                            <th>ចំនួន (បញ្ចូលពិតប្រាកដ)</th>
+                            <th>ថ្លៃឯកតា</th>
+                            <th>សរុបទឹកប្រាក់</th>
+                            <th>លេខប័ណ្ណបញ្ចូលសម្ភារៈ ទំនិញ</th>
+                            <th>កាលបរិច្ឆេទបញ្ជីបញ្ចូលសម្ភារៈ ទំនិញ</th>
+                            <th>បានទទួលពី</th>
+                            <th>តាម (ប្រភេទសក្ខីបត្រដើម)</th>
+                            <th>លេខសក្ខីបត្រ</th>
+                            <th>កាលបរិច្ឆេទវិក្កយបត្រ</th>
+                            <th>អ្នកបញ្ចូល</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data from the provided list
+            const sampleData = [
+                ["កាវATM","កិច្ចដំណើរការរដ្ឋបាល","ដប","13","13","8000"],["កាវបិតថ្លា ៥០មល","កិច្ចដំណើរការរដ្ឋបាល","ដប","13","13","4000"],["កាវបិតថ្លា ៥០មល","កិច្ចដំណើរការរដ្ឋបាល","ដប","20","20","3000"],["ក្រដាស excellent","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","7","7","18000"],["ក្រដាស statjet","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","4","4","19000"],["ក្រដាស statjet","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","2","2","19700"],["ក្រដាសរ៉ាមDoubble A","កិច្ចដំណើរការរដ្ឋបាល","កេស","4","4","60000"],["ក្រដាសរ៉ាមDouble A","កិច្ចដំណើរការរដ្ឋបាល","កេស","11","11","65000"],["ក្រូណូដាក់ឯកសារ ទំហំA4","កិច្ចដំណើរការរដ្ឋបាល","ផ្ទាំង","1","1","15000"],["ក្រូណូដាក់ឯកសារ(៦)","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","1","1","70000"],["ក្រូណូដាក់ឯកសារ(៦)","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","1","1","63300"],["ឃ្នាបខ្មៅ 15mm","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","2","2","23500"],["ឃ្នាបខ្មៅ 15mm","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","4","4","8000"],["ជ័រថ្លាបិតរូបថត","កិច្ចដំណើរការរដ្ឋបាល","ដប","4","4","2500"],["តាំប៉ុងGiraffe ពណ៍ក្រហម","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","4","4","8000"],["តារាងរដ្ឋបាល","កិច្ចដំណើរការរដ្ឋបាល","ឈុត","2","2","36000"],["ទឹកត្រាGiraffe ពណ៍ក្រហម","កិច្ចដំណើរការរដ្ឋបាល","ដប","2","2","5000"],["ទឹកហ្វឺត ជីរ៉ាហ្វ (ខៀវ)","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","7","7","55000"],["ទឹកហ្វឺតជីរ៉ាហ្វ","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","2","2","25000"],["បញ្ជីស្រង់ពិន្ទុ","កិច្ចដំណើរការរដ្ឋបាល","ក្បាល","12","12","3500"],["បញ្ជីហៅឈ្មោះសិស្ស","កិច្ចដំណើរការរដ្ឋបាល","ក្បាល","12","12","3500"],["ប៊ិកក្រហមម៉ាកជីរ៉ាហ្វ","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","1","1","25000"],["ប៊ិកខៀវម៉ាកជីរ៉ាហ្វ","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","1","1","25000"],["ប្រដាប់ចោះរន្ធពីរ","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","1","1","30000"],["សឺមីកិបឡេវ ទំហំA4","កិច្ចដំណើរការរដ្ឋបាល","សន្លឹក","10","10","2000"],["សឺមីក្រដាស ទំហំA4","កិច្ចដំណើរការរដ្ឋបាល","សន្លឹក","22","22","2500"],["សៀវភៅតាមដានការសិក្សា","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","1","1","26500"],["សៀវភៅសិក្ខាគារិក","កិច្ចដំណើរការរដ្ឋបាល","ដុំ","1","1","26500"],["ហ្វឺតPILOT","កិច្ចដំណើរការរដ្ឋបាល","ប្រអប់","1","1","28000"],
+                ["ថង់ខ្មៅ","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","ដុំ","4","4","12500"],["បាល់ទះ Mikasa","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","គ្រាប់","1","1","60000"],["បាល់ទះMikasa","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","គ្រាប់","2","2","60000"],["បាល់ទាត់ Mikasa","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","គ្រាប់","4","4","60000"],["បាល់ទាត់Mikasa","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","គ្រាប់","2","2","60000"],["ម៉ាស់","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","ដុំ","29","29","5000"],["សំណាញ់បាល់ទាត់","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","គូ","1","1","100500"],["អាល់កុល","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","ដប","1","1","5500"],["អាល់កុល៥០០ml","អប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ","ដប","1","1","6000"],
+                ["Color ផាត់រូបភាព","សម្ភារៈរៀន និងបង្រៀន","ដុំ","2","2","15000"],["កងបង្វិល","សម្ភារៈរៀន និងបង្រៀន","ឈុត","12","12","8000"],["កន្រ្តៃ","សម្ភារៈរៀន និងបង្រៀន","ដើម","20","20","3500"],["កន្រ្តៃ","សម្ភារៈរៀន និងបង្រៀន","ដើម","10","10","4000"],["កាវបិតថ្លា ៥០មល","សម្ភារៈរៀន និងបង្រៀន","ដប","14","14","5000"],["កូនបាល់","សម្ភារៈរៀន និងបង្រៀន","គ្រាប់","50","50","5000"],["ក្តារចំនួន0ដល់២០","សម្ភារៈរៀន និងបង្រៀន","ផ្ទាំង","10","10","4000"],["ក្តារព្យញ្ជនៈ៣៣តួ","សម្ភារៈរៀន និងបង្រៀន","ផ្ទាំង","20","20","4000"],["ក្រដាសកាតុង","សម្ភារៈរៀន និងបង្រៀន","សន្លឹក","207","207","1000"],["ក្រដាសកាតុង","សម្ភារៈរៀន និងបង្រៀន","ដុំ","1","1","54000"],["ក្រដាសផ្ទាំងធំ","សម្ភារៈរៀន និងបង្រៀន","សន្លឹក","266","266","500"],["ក្រដាសពណ៌A4","សម្ភារៈរៀន និងបង្រៀន","កេស","1","1","60000"],["ក្រដាសពណ៌A4","សម្ភារៈរៀន និងបង្រៀន","ដំុ","5","5","15000"],["ក្រដាសរ៉ាមDouble A","សម្ភារៈរៀន និងបង្រៀន","កេស","2","2","60000"],["ក្រដាសរ៉ាមDouble A","សម្ភារៈរៀន និងបង្រៀន","ដុំ","4","4","15000"],["ក្រដាសរ៉ាមDouble A(A4)","សម្ភារៈរៀន និងបង្រៀន","កេស","3","3","60000"],["ក្រដាសរ៉ាមDouble A(ពណ៌)","សម្ភារៈរៀន និងបង្រៀន","កេស","2","2","60000"],["ក្រដាសរ៉ាមDouble A(ពណ៌)","សម្ភារៈរៀន និងបង្រៀន","កេស","6","6","65000"],["ក្រដាសរ៉ាមDouble A(ពណ៌)","សម្ភារៈរៀន និងបង្រៀន","ដុំ","1","1","60000"],["ខ្មៅដៃLead HB","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","3","3","18000"],["គូល័រឈើម៉ាកជីរ៉ាហ្វ","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","10","10","15000"],["គ្រាប់កិបម៉ាកKangaro","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","5","5","1500"],["គ្រាប់កិបម៉ាកKangaro(១០)","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","3","3","7000"],["គ្រាប់កិបម៉ាកKangaro(១០)","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","1","1","20000"],["ឃ្នាបខ្មៅ 15mm","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","1","1","15000"],
+                ["ទឹកលុប","សម្ភារៈរៀន និងបង្រៀន","ដើម","2","2","5000"],["ទឹកហ្វឺត ជីរ៉ាហ្វ (ខៀវ)","សម្ភារៈរៀន និងបង្រៀន","ដុំ","9","9","50000"],["ទឹកហ្វឺតជីរ៉ាហ្វ","សម្ភារៈរៀន និងបង្រៀន","ដប","10","10","5000"],["ទឹកហ្វឺតជីរ៉ាហ្វ","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","2","2","50000"],["បណ្ណចល័តចំនួន០ដល់១០","សម្ភារៈរៀន និងបង្រៀន","ឈុត","20","20","3000"],["បណ្ណចល័តព្យញ្ជនៈ៣៣តួ","សម្ភារៈរៀន និងបង្រៀន","ឈុត","20","20","3000"],["បន្ទាត់ជ័រ ២០​សម","សម្ភារៈរៀន និងបង្រៀន","ដើម","18","18","1000"],["ប៊ិកLINC","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","2","2","25000"],["ប៊ិកម៉ាកជីរ៉ាហ្វ(ក្រហម)","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","4","4","25000"],["ប៊ិកម៉ាកជីរ៉ាហ្វ(ខៀវ)","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","4","4","25000"],["ប្រដាប់លុបក្ដាខៀន","សម្ភារៈរៀន និងបង្រៀន","ឡូ","1","1","30000"],["ផ្លាស្ទិចបិតរូបភាព","សម្ភារៈរៀន និងបង្រៀន","ដុំ","1","1","80000"],["ផ្លាស្ទិចបិតរូបភាព","សម្ភារៈរៀន និងបង្រៀន","ដុំ","1","1","78000"],["សម្ភារៈសម្រាប់លេងម៉ោងសេរី","សម្ភារៈរៀន និងបង្រៀន","ឈុត","1","1","25000"],["សឺមីកិបឡេវ ទំហំA4(២០)","សម្ភារៈរៀន និងបង្រៀន","ដុំ","2","2","30000"],["សៀវភៅសរសេរ ២០០ទំព័រ(A4)","សម្ភារៈរៀន និងបង្រៀន","ក្បាល","2","2","7000"],["សៀវភៅសរសេរ ២០០ទំព័រ(A5)","សម្ភារៈរៀន និងបង្រៀន","ដុំ","1","1","20000"],["ស្គុតក្រដាស","សម្ភារៈរៀន និងបង្រៀន","ដុំ","23","23","3000"],["ហ្វឺតTOYO","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","12","12","30000"],["ហ្វឺតTOYO","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","9","9","20000"],["ហ្វឺតក្ដាខៀនជីរ៉ាហ្វ","សម្ភារៈរៀន និងបង្រៀន","ដើម","19","19","5000"],["ហ្វឺតសរសេរក្តារខៀនPILOT","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","1","1","50000"],["ហ្វឺតសរសេរក្តារខៀនPILOT (១០)","សម្ភារៈរៀន និងបង្រៀន","ប្រអប់","3","3","50000"],
+                ["កែងទុយោមុខពីរ(27Cm)","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","គ្រាប់","6","6","10000"],["ខ្វែវ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","1","1","40000"],["ខ្វែវ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","1","1","43300"],["ចបកាប់","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","10","10","40000"],["ចបជីក","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","6","6","40000"],["ច្រាសដុសបង្គន់","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","8","8","6000"],["ញញួរ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","1","1","26000"],["ញញួរ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","1","1","25600"],["ញញួរ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","4","4","25000"],["ដែកគោល","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","គីឡូ","6","6","10000"],["ដែកគោល","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","គីឡូ","3","3","11000"],["ថ្នាំលាប","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","កំប៉ុង","6","6","25000"],["ទុយោទីប(27Cm)","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដើម","2","2","20000"],["ធុងសំរាមជ័រ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ធុង","6","6","12000"],["ម្សៅសាប៊ូViso","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","កញ្ចប់","6","6","7500"],["រ៉ូមីណេ(27Cm)","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","គ្រាប់","3","3","12500"],["សាប៊ូដុំProtect","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ដុំ","4","4","8000"],["សោទ្វារ","ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត","ប្រអប់","1","1","100000"],
+                ["Keyboad","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","2","2","120000"],["Mouse Bluetooth","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","1","1","50000"],["SSD Hardrive","ការថែទាំ និងជួសជុលផ្សេងៗ","គ្រាប់","1","1","193000"],["USB Connect Wifi","ការថែទាំ និងជួសជុលផ្សេងៗ","គ្រាប់","1","1","45000"],["ដុំទឹកថ្នាំPrinter","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","1","1","106000"],["ដុំទឹកថ្នាំPrinter","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","1","1","70000"],["ដុំទឹកថ្នាំPrinter HP","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","3","3","85000"],["ដុំទឹកថ្នាំPrinter HP","ការថែទាំ និងជួសជុលផ្សេងៗ","ឈុត","2","2","81500"],["ទឹកថ្នាំCanon","ការថែទាំ និងជួសជុលផ្សេងៗ","ដប","2","2","40000"],["ទឹកថ្នាំCanon","ការថែទាំ និងជួសជុលផ្សេងៗ","ដប","5","5","35000"],["ម្សៅទឹកថ្នាំPrinter HP","ការថែទាំ និងជួសជុលផ្សេងៗ","កញ្ចប់","5","5","68500"],
+                ["ប្រដាប់កិបក្រដាសម៉ាក Kangaro","ការចូលរៀនដោយសមធម៌និងបង្ការសិស្សបោះបង់","ប្រអប់","7","7","40000"],["ស្គុតក្រដាស","ការចូលរៀនដោយសមធម៌និងបង្ការសិស្សបោះបង់","ដុំ","1","1","8600"],["ស្គុតថ្លា","ការចូលរៀនដោយសមធម៌និងបង្ការសិស្សបោះបង់","ដុំ","61","61","5000"],["ហ្វឺត Highlight ម៉ាកជីរ៉ាហ្វ","ការចូលរៀនដោយសមធម៌និងបង្ការសិស្សបោះបង់","ដើម","20","20","2000"],["ហ្វឺតHighLight ជីរ៉ាហ្វ","ការចូលរៀនដោយសមធម៌និងបង្ការសិស្សបោះបង់","ដើម","4","4","70000"]
+            ];
+            
+            // Function to populate table with data
+            function populateTable() {
+                const tbody = document.querySelector('#mainTable tbody');
+                tbody.innerHTML = '';
+                
+                sampleData.forEach((item, index) => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td contenteditable="true" class="text-left px-2 py-1">${item[0]}</td>
+                        <td>
+                            <select class="w-full form-input">
+                                <option value="">ជ្រើសរើសប្រភេទ</option>
+                                <option value="កិច្ចដំណើរការរដ្ឋបាល" ${item[1] === 'កិច្ចដំណើរការរដ្ឋបាល' ? 'selected' : ''}>កិច្ចដំណើរការរដ្ឋបាល</option>
+                                <option value="ការថែទាំ និងជួសជុលផ្សេងៗ" ${item[1] === 'ការថែទាំ និងជួសជុលផ្សេងៗ' ? 'selected' : ''}>ការថែទាំ និងជួសជុលផ្សេងៗ</option>
+                                <option value="ការចូលរៀនដោយសមធម៌ និងបង្ការសិស្សបោះបង់" ${item[1] === 'ការចូលរៀនដោយសមធម៌ និងបង្ការសិស្សបោះបង់' ? 'selected' : ''}>ការចូលរៀនដោយសមធម៌ និងបង្ការសិស្សបោះបង់</option>
+                                <option value="សម្ភារៈបង្រៀន និងរៀន" ${item[1] === 'សម្ភារៈបង្រៀន និងរៀន' ? 'selected' : ''}>សម្ភារៈបង្រៀន និងរៀន</option>
+                                <option value="ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត" ${item[1] === 'ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត' ? 'selected' : ''}>ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត</option>
+                                <option value="ការអប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ" ${item[1] === 'ការអប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ' ? 'selected' : ''}>ការអប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="w-full form-input">
+                                <option value="កេស">កេស</option>
+                                <option value="ដប" ${item[2] === 'ដប' ? 'selected' : ''}>ដប</option>
+                                <option value="ដុំ" ${item[2] === 'ដុំ' ? 'selected' : ''}>ដុំ</option>
+                                <option value="ប្រអប់" ${item[2] === 'ប្រអប់' ? 'selected' : ''}>ប្រអប់</option>
+                                <option value="ផ្ទាំង" ${item[2] === 'ផ្ទាំង' ? 'selected' : ''}>ផ្ទាំង</option>
+                                <option value="សន្លឹក" ${item[2] === 'សន្លឹក' ? 'selected' : ''}>សន្លឹក</option>
+                                <option value="ដើម" ${item[2] === 'ដើម' ? 'selected' : ''}>ដើម</option>
+                                <option value="គ្រាប់" ${item[2] === 'គ្រាប់' ? 'selected' : ''}>គ្រាប់</option>
+                                <option value="ឈុត" ${item[2] === 'ឈុត' ? 'selected' : ''}>ឈុត</option>
+                                <option value="ក្បាល" ${item[2] === 'ក្បាល' ? 'selected' : ''}>ក្បាល</option>
+                                <option value="គូ" ${item[2] === 'គូ' ? 'selected' : ''}>គូ</option>
+                                <option value="ឡូ" ${item[2] === 'ឡូ' ? 'selected' : ''}>ឡូ</option>
+                                <option value="ដប" ${item[2] === 'ដប' ? 'selected' : ''}>ដប</option>
+                                <option value="ដុំ" ${item[2] === 'ដុំ' ? 'selected' : ''}>ដុំ</option>
+                                <option value="ប្រអប់" ${item[2] === 'ប្រអប់' ? 'selected' : ''}>ប្រអប់</option>
+                                <option value="ផ្ទាំង" ${item[2] === 'ផ្ទាំង' ? 'selected' : ''}>ផ្ទាំង</option>
+                                <option value="សន្លឹក" ${item[2] === 'សន្លឹក' ? 'selected' : ''}>សន្លឹក</option>
+                                <option value="ដើម" ${item[2] === 'ដើម' ? 'selected' : ''}>ដើម</option>
+                                <option value="គ្រាប់" ${item[2] === 'គ្រាប់' ? 'selected' : ''}>គ្រាប់</option>
+                                <option value="ឈុត" ${item[2] === 'ឈុត' ? 'selected' : ''}>ឈុត</option>
+                                <option value="ក្បាល" ${item[2] === 'ក្បាល' ? 'selected' : ''}>ក្បាល</option>
+                                <option value="គូ" ${item[2] === 'គូ' ? 'selected' : ''}>គូ</option>
+                                <option value="ឡូ" ${item[2] === 'ឡូ' ? 'selected' : ''}>ឡូ</option>
+                                <option value="ដប" ${item[2] === 'ដប' ? 'selected' : ''}>ដប</option>
+                                <option value="ដុំ" ${item[2] === 'ដុំ' ? 'selected' : ''}>ដុំ</option>
+                                <option value="ប្រអប់" ${item[2] === 'ប្រអប់' ? 'selected' : ''}>ប្រអប់</option>
+                                <option value="ផ្ទាំង" ${item[2] === 'ផ្ទាំង' ? 'selected' : ''}>ផ្ទាំង</option>
+                                <option value="សន្លឹក" ${item[2] === 'សន្លឹក' ? 'selected' : ''}>សន្លឹក</option>
+                                <option value="ដើម" ${item[2] === 'ដើម' ? 'selected' : ''}>ដើម</option>
+                                <option value="គ្រាប់" ${item[2] === 'គ្រាប់' ? 'selected' : ''}>គ្រាប់</option>
+                                <option value="ឈុត" ${item[2] === 'ឈុត' ? 'selected' : ''}>ឈុត</option>
+                                <option value="ក្បាល" ${item[2] === 'ក្បាល' ? 'selected' : ''}>ក្បាល</option>
+                                <option value="គូ" ${item[2] === 'គូ' ? 'selected' : ''}>គូ</option>
+                                <option value="ឡូ" ${item[2] === 'ឡូ' ? 'selected' : ''}>ឡូ</option>
+                            </select>
+                        </td>
+                        <td contenteditable="true" class="text-center px-2 py-1">${item[3]}</td>
+                        <td contenteditable="true" class="text-center px-2 py-1">${item[4]}</td>
+                        <td contenteditable="true" class="text-center px-2 py-1">${item[5]}</td>
+                        <td class="text-center px-2 py-1">0</td>
+                        <td class="text-center px-2 py-1">
+                            <button class="delete-btn">លុប</button>
+                        </td>
+                    `;
+                });
+                
+                updateTotals();
+            }
+            
+            // Function to calculate totals
+            function updateTotals() {
+                const rows = document.querySelectorAll('#mainTable tbody tr');
+                let totalCount = 0;
+                let totalAmount = 0;
+                
+                rows.forEach(row => {
+                    const quantityCell = row.cells[4];
+                    const unitPriceCell = row.cells[6];
+                    const amountCell = row.cells[7];
+                    
+                    const quantity = parseInt(quantityCell.textContent) || 0;
+                    const unitPrice = parseInt(unitPriceCell.textContent) || 0;
+                    const amount = quantity * unitPrice;
+                    
+                    amountCell.textContent = amount.toLocaleString();
+                    totalCount += quantity;
+                    totalAmount += amount;
+                });
+                
+                document.getElementById('item-count').textContent = totalCount;
+                document.getElementById('total-amount').textContent = totalAmount.toLocaleString() + ' ៛';
+            }
+            
+            // Add new row
+            document.getElementById('addRowBtn').addEventListener('click', function() {
+                const table = document.getElementById('mainTable').getElementsByTagName('tbody')[0];
+                const newRow = table.insertRow();
+                const rowCount = table.rows.length;
+                
+                newRow.innerHTML = `
+                    <td>${rowCount}</td>
+                    <td contenteditable="true" class="text-left px-2 py-1">បញ្ចូលឈ្មោះសម្ភារៈ</td>
+                    <td>
+                        <select class="w-full form-input">
+                            <option value="">ជ្រើសរើសប្រភេទ</option>
+                            <option value="កិច្ចដំណើរការរដ្ឋបាល">កិច្ចដំណើរការរដ្ឋបាល</option>
+                            <option value="ការថែទាំ និងជួសជុលផ្សេងៗ">ការថែទាំ និងជួសជុលផ្សេងៗ</option>
+                            <option value="ការចូលរៀនដោយសមធម៌ និងបង្ការសិស្សបោះបង់">ការចូលរៀនដោយសមធម៌ និងបង្ការសិស្សបោះបង់</option>
+                            <option value="សម្ភារៈបង្រៀន និងរៀន">សម្ភារៈបង្រៀន និងរៀន</option>
+                            <option value="ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត">ការកែលម្អបរិស្ថាន និងទីធ្លាកម្សាន្ត</option>
+                            <option value="ការអប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ">ការអប់រំបំណិនជីវិត កីឡា ការងារយុវជន និងកុមារ</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="w-full form-input">
+                            <option value="កេស">កេស</option>
+                            <option value="ដប">ដប</option>
+                            <option value="ដុំ">ដុំ</option>
+                            <option value="ប្រអប់">ប្រអប់</option>
+                            <option value="ផ្ទាំង">ផ្ទាំង</option>
+                            <option value="សន្លឹក">សន្លឹក</option>
+                            <option value="ដើម">ដើម</option>
+                            <option value="គ្រាប់">គ្រាប់</option>
+                            <option value="ឈុត">ឈុត</option>
+                            <option value="ក្បាល">ក្បាល</option>
+                            <option value="គូ">គូ</option>
+                            <option value="ឡូ">ឡូ</option>
+                        </select>
+                    </td>
+                    <td contenteditable="true" class="text-center px-2 py-1">0</td>
+                    <td contenteditable="true" class="text-center px-2 py-1">0</td>
+                    <td contenteditable="true" class="text-center px-2 py-1">0</td>
+                    <td class="text-center px-2 py-1">0</td>
+                    <td class="text-center px-2 py-1">
+                        <button class="delete-btn">លុប</button>
+                    </td>
+                `;
+                
+                // Add event listeners to new elements
+                newRow.addEventListener('input', function() {
+                    updateTotals();
+                });
+                
+                // Add delete button functionality
+                newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                    if (table.rows.length > 1) {
+                        newRow.remove();
+                        updateTotals();
+                    }
+                });
+                
+                // Add event listeners to new inputs
+                const editableCells = newRow.querySelectorAll('[contenteditable]');
+                editableCells.forEach(cell => {
+                    cell.addEventListener('input', function() {
+                        updateTotals();
+                    });
+                });
+            });
+            
+            // Add delete button functionality to existing rows
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const table = row.parentNode;
+                    if (table.rows.length > 1) {
+                        row.remove();
+                        updateTotals();
+                    }
+                });
+            });
+            
+            // Add event listeners to existing input cells
+            document.querySelectorAll('[contenteditable]').forEach(cell => {
+                cell.addEventListener('input', function() {
+                    updateTotals();
+                });
+            });
+            
+            // Initialize with sample data
+            populateTable();
+            
+            // Save button functionality
+            document.querySelector('.save-btn').addEventListener('click', function() {
+                alert('ទិន្នន័យត្រូវបានរក្សាទុកដោយជោគជ័យ!');
+            });
+        });
+    </script>
 </body>
 </html>
