@@ -1,0 +1,31 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    
+    "classes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    
+    "teachers": {
+      ".read": "auth != null && auth.role === 'admin'",
+      ".write": "auth != null && auth.role === 'admin'"
+    },
+    
+    "students": {
+      ".read": "auth != null",
+      ".write": "auth != null && (auth.role === 'teacher' || auth.role === 'admin')"
+    },
+    
+    "scores": {
+      ".read": "auth != null && (auth.role === 'teacher' || auth.role === 'admin')",
+      ".write": "auth != null && (auth.role === 'teacher' || auth.role === 'admin')"
+    },
+    
+    "attendance": {
+      ".read": "auth != null && (auth.role === 'teacher' || auth.role === 'admin')",
+      ".write": "auth != null && (auth.role === 'teacher' || auth.role === 'admin')"
+    }
+  }
+}
