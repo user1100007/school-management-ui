@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Import Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Import Students</h1>
+    <input type="file" id="fileInput" accept=".csv, .xlsx, .xls">
+    <button id="importBtn">Import</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('importBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheetName = workbook.SheetNames[0];
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+                document.getElementById('output').innerHTML = JSON.stringify(jsonData, null, 2);
+            };
+
+            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
+                reader.readAsArrayBuffer(file);
+            } else if (file.type === 'text/csv') {
+                reader.readAsText(file);
+            } else {
+                alert('Unsupported file format');
+            }
+        });
+    </script>
+</body>
+</html>
