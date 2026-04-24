@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>របាយការណ៍បូកសរុបលទ្ធផលការងារអប់រំ</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: 'Kantumruy Pro', sans-serif;
+      line-height: 1.3;
+      color: #222;
+      max-width: 1020px;
+      margin: 20px auto;
+      padding: 16px 20px;
+      background: #fff;
+    }
+
+    h1 { 
+      font-size: 13px; 
+      font-weight: 700; 
+      margin: 14px 0 4px;
+      background: #1565c0; 
+      color: #fff;
+      padding: 5px 10px; 
+      border-radius: 4px;
+    }
+    
+    h2 { 
+      font-size: 12px; 
+      font-weight: 600; 
+      margin: 10px 0 4px;
+      color: #1565c0; 
+      border-left: 3px solid #1565c0;
+      padding-left: 6px;
+    }
+
+    .header { 
+      text-align: center; 
+      font-size: 13px; 
+      font-weight: 700;
+      line-height: 1.6; 
+      margin-bottom: 4px; 
+    }
+    
+    .title  { 
+      text-align: left;  
+      font-size: 13px; 
+      font-weight: 700; 
+      line-height: 1.6; 
+      margin-bottom: 4px; 
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      background: #fff;
+      font-size: 12px;
+    }
+    
+    th, td {
+      border: 1px solid #aaa;
+      padding: 2px 5px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    
+    td { text-align: left; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+
+    .editable {
+      background: #fffde7;
+      border-bottom: 1px dashed #bbb;
+      display: inline-block;
+      min-width: 28px;
+      text-align: center;
+      outline: none;
+      padding: 1px 4px;
+      font-size: 12px;
+      font-family: 'Kantumruy Pro', sans-serif;
+      border-radius: 2px;
+    }
+    
+    .editable:focus { 
+      background: #fff9c4; 
+      border-bottom-color: #f9a825; 
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      background: #f0f4f8;
+      border-radius: 6px;
+      border: 1px solid #d0d7de;
+    }
+    
+    .toolbar button, .toolbar label {
+      font-family: 'Kantumruy Pro', sans-serif;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid #999;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #333;
+    }
+    
+    .toolbar button:hover, .toolbar label:hover { 
+      background: #e2e8f0; 
+      border-color: #666; 
+    }
+    
+    .toolbar .btn-print { 
+      background: #e8f5e9; 
+      border-color: #4caf50; 
+      color: #2e7d32; 
+      font-weight: 600;
+    }
+    
+    .toolbar .btn-xlsx { 
+      background: #e3f2fd; 
+      border-color: #2196f3; 
+      color: #1565c0; 
+      font-weight: 600;
+    }
+    
+    .toolbar .btn-json { 
+      background: #fff3e0; 
+      border-color: #ff9800; 
+      color: #e65100; 
+      font-weight: 600;
+    }
+    
+    .toolbar .btn-firebase { 
+      background: #fce4ec; 
+      border-color: #e91e63; 
+      color: #880e4f; 
+      font-weight: 600;
+    }
+    
+    .toolbar .btn-import { 
+      background: #f3e5f5; 
+      border-color: #9c27b0; 
+      color: #4a148c; 
+      font-weight: 600;
+    }
+    
+    #fbStatus { 
+      font-size: 11px; 
+      padding: 4px 8px; 
+      border-radius: 4px; 
+      display: none;
+    }
+    
+    #fbStatus.ok { 
+      background: #e8f5e9; 
+      color: #2e7d32; 
+      display: inline-block; 
+    }
+    
+    #fbStatus.err { 
+      background: #ffebee; 
+      color: #c62828; 
+      display: inline-block; 
+    }
+
+    /* Increment / Decrement buttons */
+    .btn-group { 
+      display: flex; 
+      gap: 3px; 
+      justify-content: center; 
+    }
+    
+    .btn-inc, .btn-dec {
+      font-family: 'Kantumruy Pro', sans-serif;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid #888;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn-inc { 
+      background: #e3f2fd; 
+      border-color: #42a5f5; 
+    }
+    
+    .btn-inc:hover { 
+      background: #bbdefb; 
+    }
+    
+    .btn-dec { 
+      background: #fce4ec; 
+      border-color: #ef9a9a; 
+    }
+    
+    .btn-dec:hover { 
+      background: #ffcdd2; 
+    }
+
+    .note { 
+      margin-top: 6px; 
+      font-style: italic; 
+      color: #555; 
+      font-size: 12px; 
+    }
+
+    th { 
+      background: #e3eaf5; 
+      color: #1a237e; 
+    }
+    
+    table thead tr:first-child th { 
+      background: #1565c0; 
+      color: #fff; 
+    }
+
+    @media print {
+      .toolbar, #fbStatus { display: none !important; }
+      body { margin: 0; padding: 8px; }
+      .editable { border: none; background: transparent; }
+      
+      #printDocHeader {
+        display: block !important;
+      }
+      
+      #signatureContainer {
+        display: block !important;
+        margin-top: 30px;
+        page-break-inside: avoid;
+      }
+
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== TOOLBAR ===== -->
+<div class="toolbar">
+  <button class="btn-print" id="btnPrint">🖨️ Print</button>
+  <button class="btn-xlsx" id="btnXlsx">📊 XLSX</button>
+  <button class="btn-json" id="btnJson">📄 JSON</button>
+  <button class="btn-firebase" id="btnFirebase">☁️ Save Firebase</button>
+  <label class="btn-import" for="importFile">📥 Import</label>
+  <input type="file" id="importFile" style="display:none" accept=".json,.xlsx">
+  <span id="fbStatus"></span>
+</div>
+
+<!-- ===== HEADER ===== -->
+<div class="header">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<br>-------xxx-------</div>
+<div style="display:flex; justify-content:space-between; font-size:13px; margin:4px 0;">
+  <div class="title">រដ្ឋបាលស្រុកភ្នំស្រុក<br>ការិយាល័យអប់រំ យុវជន និងកីឡាស្រុក<br>កម្រងស្ពានស្រែង<br>សាលាបឋមសិក្សា រោគ</div>
+  <div style="text-align:right;"></div>
+</div>
+<div class="header" style="margin:6px 0; font-weight:800;">
+  របាយការណ៍បូកសរុបលទ្ធផលការងារអប់រំ ផ្នែកបឋមសិក្សា<br>
+  (នាឆមាសទី១ ឆ្នាំសិក្សា២០២៥-២០២៦)
+</div>
+
+<!-- ===== I ===== -->
+<h1>I. បម្រែបម្រួលផ្នែកបរិមាណ</h1>
+<h2>១. សាលារៀន</h2>
+<table id="schoolDataTable">
+  <tbody>
+    <tr>
+      <td>ចំនួនកម្រងសាលារៀន :</td>
+      <td><span contenteditable="" class="editable">1</span></td>
+      <td>កម្រង</td>
+    </tr>
+    <tr>
+      <td>ចំនួនសាលារៀន បិទទ្វារ :</td>
+      <td><span contenteditable="" class="editable">0</span></td>
+      <td>សាលា</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>២. ប្រៀបធៀបចំនួនសិស្ស បវេសនកាល</h2>
+<table id="studentComparisonTable">
+  <tbody>
+    <tr>
+      <th>ចំនួនសិស្សសរុបរួម :</th>
+      <th id="totalStudents">248</th>
+      <th>នាក់ ស្រី :</th>
+      <th id="totalFemale">116</th>
+      <th>នាក់</th>
+    </tr>
+    <tr data-grade="1">
+      <td>សិស្សសរុបថ្នាក់ទី១ :</td>
+      <td><span contenteditable="" class="editable grade-total" data-grade="1">30</span></td>
+      <td>នាក់ ស្រី :</td>
+      <td><span contenteditable="" class="editable grade-female" data-grade="1">14</span></td>
+      <td>នាក់</td>
+    </tr>
+    <tr data-grade="2">
+      <td>សិស្សសរុបថ្នាក់ទី២ :</td>
+      <td><span contenteditable="" class="editable grade-total" data-grade="2">42</span></td>
+      <td>នាក់ ស្រី :</td>
+      <td><span contenteditable="" class="editable grade-female" data-grade="2">21</span></td>
+      <td>នាក់</td>
+    </tr>
+    <tr data-grade="3">
+      <td>សិស្សសរុបថ្នាក់ទី៣ :</td>
+      <td><span contenteditable="" class="editable grade-total" data-grade="3">42</span></td>
+      <td>នាក់ ស្រី :</td>
+      <td><span contenteditable="" class="editable grade-female" data-grade="3">20</span></td>
+      <td>នាក់</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== II ===== -->
+<h1>II. ការងារ​ធនាគុណភាព</h1>
+<h2>១. លទ្ធផល​សិក្សា​ឆមាសទី១</h2>
+<table id="resultsTable">
+  <thead>
+    <tr>
+      <th>ថ្នាក់ទី</th>
+      <th>សិស្សឆមាសទី១</th>
+      <th>សិស្ស ស្រី</th>
+      <th>ជាប់</th>
+      <th>ស្រី</th>
+      <th>ធ្លាក់</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><span contenteditable="" class="editable r-s1">30</span></td>
+      <td><span contenteditable="" class="editable r-f1">14</span></td>
+      <td><span contenteditable="" class="editable r-pass1">30</span></td>
+      <td><span contenteditable="" class="editable r-fpas1">14</span></td>
+      <td><span contenteditable="" class="editable r-fail1">0</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><span contenteditable="" class="editable r-s2">42</span></td>
+      <td><span contenteditable="" class="editable r-f2">21</span></td>
+      <td><span contenteditable="" class="editable r-pass2">42</span></td>
+      <td><span contenteditable="" class="editable r-fpas2">21</span></td>
+      <td><span contenteditable="" class="editable r-fail2">0</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><span contenteditable="" class="editable r-s3">42</span></td>
+      <td><span contenteditable="" class="editable r-f3">20</span></td>
+      <td><span contenteditable="" class="editable r-pass3">40</span></td>
+      <td><span contenteditable="" class="editable r-fpas3">21</span></td>
+      <td><span contenteditable="" class="editable r-fail3">1</span></td>
+    </tr>
+    <tr>
+      <th>សរុប</th>
+      <th id="rTotalS">248</th>
+      <th id="rTotalF">116</th>
+      <th id="rTotalPass">242</th>
+      <th id="rTotalFPass">116</th>
+      <th id="rTotalFail">5</th>
+    </tr>
+  </tbody>
+</table>
+
+<div id="signatureContainer">
+    <div style="display:flex; justify-content:space-between; margin-top:30px; text-align:center;">
+        <div style="width: 50%;">
+            <div style="font-weight:bold;">បានឃើញ និងឯកភាព</div>
+            <div style="font-weight:bold;margin-bottom:10px;">នាយកសាលា</div>
+            <div style="margin-top:35px;">..........................................</div>
+        </div>
+        <div style="width: 50%; text-align: left;">
+            <div style="text-align: left;">ថ្ងៃសុក្រ ខែផល្គុន ឆ្នាំឆ្លូវ សប្តស័ក ព.ស.២៥៦៩</div>
+            <div style="text-align: left;">រោគ ថ្ងៃទី២៤ ខែមេសា ឆ្នាំ២០២៦</div>
+            <div style="font-weight:bold; margin-top:5px;">អ្នកធ្វើរបាយការណ៍</div>
+            <div style="margin-top:60px; font-weight:bold;">អ៊ុន ប៊ុនទុង</div>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5T2ec-mxeO0lzknVe5SEBBXlp7IWmmuE",
+    authDomain: "schoolreport-a7404.firebaseapp.com",
+    databaseURL: "https://schoolreport-a7404-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "schoolreport-a7404",
+    storageBucket: "schoolreport-a7404.firebasestorage.app",
+    messagingSenderId: "62869703269",
+    appId: "1:62869703269:web:d1a763f78eb8ae8906d48c",
+    measurementId: "G-BN06Y965QY"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
+
+  function showStatus(msg, isOk) {
+    const st = document.getElementById('fbStatus');
+    st.textContent = (isOk ? '✅ ' : '❌ ') + msg;
+    st.className = isOk ? 'ok' : 'err';
+    setTimeout(() => st.className = '', 5000);
+  }
+
+  const getVal = (el) => {
+    if (!el) return 0;
+    const v = parseInt(el.textContent.replace(/[^0-9]/g, '')) || 0;
+    return v;
+  };
+
+  function updateAllCalculations() {
+    let totalS = 0, totalF = 0;
+    for (let g = 1; g <= 3; g++) {
+      totalS += getVal(document.querySelector(`.grade-total[data-grade="${g}"]`));
+      totalF += getVal(document.querySelector(`.grade-female[data-grade="${g}"]`));
+    }
+    document.getElementById('totalStudents').textContent = totalS;
+    document.getElementById('totalFemale').textContent = totalF;
+
+    let sumS1 = 0, sumF1 = 0, sumPass = 0, sumFPass = 0, sumFail = 0;
+    for (let g = 1; g <= 3; g++) {
+      const s1Total = getVal(document.querySelector(`.r-s${g}`));
+      const s1Female = getVal(document.querySelector(`.r-f${g}`));
+      const pS = getVal(document.querySelector(`.r-pass${g}`));
+      const pF = getVal(document.querySelector(`.r-fpas${g}`));
+      const fS = getVal(document.querySelector(`.r-fail${g}`));
+
+      sumS1 += s1Total;
+      sumF1 += s1Female;
+      sumPass += pS;
+      sumFPass += pF;
+      sumFail += fS;
+    }
+
+    document.getElementById('rTotalS').textContent = sumS1;
+    document.getElementById('rTotalF').textContent = sumF1;
+    document.getElementById('rTotalPass').textContent = sumPass;
+    document.getElementById('rTotalFPass').textContent = sumFPass;
+    document.getElementById('rTotalFail').textContent = sumFail;
+  }
+
+  // Firebase Save
+  document.getElementById('btnFirebase').addEventListener('click', async () => {
+    const data = {};
+    document.querySelectorAll('.editable').forEach((el, i) => {
+      data[`field_${i}`] = el.textContent;
+    });
+    try {
+      await db.collection("reports").doc("sem1_2026").set({
+        content: data,
+        updatedAt: new Date()
+      });
+      showStatus("បានរក្សាទុកក្នុង Cloud", true);
+    } catch (e) {
+      showStatus("បរាជ័យ: " + e.message, false);
+    }
+  });
+
+  // Export XLSX
+  document.getElementById('btnXlsx').addEventListener('click', () => {
+    const wb = XLSX.utils.book_new();
+    const tables = document.querySelectorAll('table');
+    tables.forEach((tbl, idx) => {
+      const ws = XLSX.utils.table_to_sheet(tbl);
+      XLSX.utils.book_append_sheet(wb, ws, `Table_${idx+1}`);
+    });
+    XLSX.writeFile(wb, "Educational_Report_2026.xlsx");
+  });
+
+  // Export JSON
+  document.getElementById('btnJson').addEventListener('click', () => {
+    const data = {};
+    document.querySelectorAll('.editable').forEach((el, i) => {
+      data[`field_${i}`] = el.textContent;
+    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "report_data.json";
+    a.click();
+  });
+
+  // Print
+  document.getElementById('btnPrint').addEventListener('click', () => {
+    window.print();
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAllCalculations();
+    document.addEventListener('input', (e) => {
+      if (e.target.classList.contains('editable')) {
+        updateAllCalculations();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
